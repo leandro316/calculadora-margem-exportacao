@@ -1,0 +1,369 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Calculadora de Margem de Exportação — AXIA</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Archivo:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Fraunces:ital,opsz,wght@0,9..144,300..650;1,9..144,300..650&display=swap');
+
+  :root{
+    --paper:#FCFAF5; --bone-50:#F8F5EE; --bone-100:#F1ECE1;
+    --ink-900:#0A1020; --ink-950:#05080F; --ink-850:#0D1526; --ink-800:#121B30; --ink-700:#1B2740;
+    --gold:#C9A24B; --gold-bright:#E3C377; --gold-deep:#7E6225; --gold-soft:rgba(201,162,75,.14);
+    --txt-dark:#EFEBE1; --txt-dark-muted:#A9B0C0;
+    --txt-light:#1A2233; --txt-light-muted:#525D74;
+    --line-l:rgba(26,34,51,.13); --line-d:rgba(239,235,225,.12);
+    --success:#2F8E62; --error:#C0463D;
+    --display: 'Fraunces', 'Iowan Old Style', Georgia, serif;
+    --sans: 'Archivo', 'Helvetica Neue', Arial, sans-serif;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{background:var(--paper); color:var(--txt-light); font-family:var(--sans); line-height:1.65; font-size:16px; -webkit-font-smoothing:antialiased;}
+  .wrap{max-width:760px; margin:0 auto; padding:0 0 40px;}
+
+  .hero{position:relative; overflow:hidden; background:var(--ink-950); padding:38px 24px 44px;}
+  .hero-map{position:absolute; top:0; right:-40px; width:520px; max-width:70%; height:auto; opacity:.6; pointer-events:none;}
+  .hero-top{display:flex; align-items:center; gap:10px; margin-bottom:34px; position:relative; z-index:1;}
+  .hero-top .logo-mark{width:30px; height:25px; display:block;}
+  .hero-top .logo-word{font-family:var(--sans); font-weight:700; font-size:15px; letter-spacing:.14em; color:var(--txt-dark);}
+  .hero-top .logo-word sup{color:var(--gold); font-size:9px;}
+  .hero-grid{display:flex; align-items:flex-end; gap:24px; position:relative; z-index:1;}
+  .hero-copy{flex:1; min-width:0;}
+  .hero-eyebrow{display:flex; align-items:center; gap:8px; font-family:var(--sans); font-weight:600; font-size:11.5px; letter-spacing:.1em; text-transform:uppercase; color:var(--txt-dark-muted); margin-bottom:16px;}
+  .hero-eyebrow .dot{width:6px; height:6px; border-radius:50%; background:var(--gold);}
+  .hero h1{font-family:var(--display); font-size:clamp(28px,5.6vw,40px); line-height:1.14; margin:0 0 16px; font-weight:600; letter-spacing:-.005em; color:var(--txt-dark);}
+  .hero h1 .accent{color:var(--gold-bright);}
+  .hero-sub{font-size:16.5px; color:var(--txt-dark-muted); max-width:48ch; margin:0;}
+  .coin-art{flex-shrink:0; width:120px; height:auto;}
+  @media (max-width:620px){ .hero-grid{flex-direction:column; align-items:stretch;} .coin-art{width:96px; align-self:flex-end;} .hero-map{opacity:.4;} }
+
+  .inner{padding:0 24px;}
+
+  .eyebrow{display:flex; align-items:center; gap:8px; font-family:var(--sans); font-weight:600; font-size:11.5px; letter-spacing:.1em; text-transform:uppercase; color:var(--gold-deep); margin:36px 0 14px;}
+  .eyebrow .dot{width:6px; height:6px; border-radius:50%; background:var(--gold);}
+
+  .lede{font-size:17.5px; color:var(--txt-light-muted); max-width:62ch; margin:0 0 40px;}
+  .lede strong{color:var(--txt-light); font-weight:700;}
+
+  .toc{background:var(--bone-50); border:1px solid var(--line-l); border-radius:12px; padding:22px 24px; margin-bottom:52px;}
+  .toc-title{font-family:var(--sans); font-weight:600; font-size:11px; letter-spacing:.1em; text-transform:uppercase; color:var(--txt-light-muted); margin-bottom:14px;}
+  .toc ol{list-style:none; margin:0; padding:0; counter-reset:toc;}
+  .toc li{counter-increment:toc; display:flex; gap:12px; padding:9px 0; border-bottom:1px solid var(--line-l); font-size:14.5px;}
+  .toc li:last-child{border-bottom:none;}
+  .toc li::before{content:counter(toc,decimal-leading-zero); font-family:var(--sans); color:var(--gold-deep); font-size:13px; font-weight:700;}
+  .toc a{color:var(--txt-light); text-decoration:none; font-weight:500;}
+  .toc a:hover{color:var(--gold-deep);}
+
+  .part{margin:64px 0;}
+  .part-tag{font-family:var(--sans); font-weight:600; font-size:11px; letter-spacing:.1em; text-transform:uppercase; color:var(--gold-deep); margin-bottom:10px;}
+  h2{font-family:var(--display); font-size:26px; margin:0 0 20px; font-weight:600; letter-spacing:-.005em; color:var(--txt-light);}
+  p{margin:0 0 16px; color:var(--txt-light-muted);}
+  strong{color:var(--txt-light);}
+  .accent{color:var(--gold-deep);}
+
+  .tip{border-left:3px solid var(--gold); background:var(--gold-soft); border-radius:0 10px 10px 0; padding:14px 18px; margin:20px 0; font-size:14.5px; color:var(--txt-light);}
+
+  /* calculadora */
+  .calc{background:var(--bone-50); border:1px solid var(--line-l); border-radius:14px; padding:22px 20px; margin:28px 0;}
+  .field{margin-bottom:18px;}
+  .field label{display:block; font-size:13.5px; font-weight:600; color:var(--txt-light); margin-bottom:6px;}
+  .field-hint{font-size:12px; color:var(--txt-light-muted); margin-top:4px;}
+  .field-input{display:flex; align-items:center; border:1px solid var(--line-l); background:var(--paper); border-radius:8px; overflow:hidden;}
+  .field-input .prefix{padding:10px 10px 10px 14px; font-size:14px; color:var(--txt-light-muted); font-weight:600; background:var(--bone-100);}
+  .field-input input{flex:1; border:none; background:transparent; padding:10px 12px; font-family:var(--sans); font-size:15px; color:var(--txt-light); width:100%;}
+  .field-input input:focus{outline:none;}
+  .field-row{display:grid; grid-template-columns:1fr 1fr; gap:14px;}
+  @media (max-width:560px){ .field-row{grid-template-columns:1fr;} }
+
+  .result{position:sticky; bottom:16px; margin-top:20px; background:var(--ink-900); border-radius:14px; padding:24px 22px 22px; color:var(--txt-dark);}
+  .result-label{font-family:var(--sans); font-weight:600; font-size:11px; letter-spacing:.08em; text-transform:uppercase; color:var(--txt-dark-muted); margin-bottom:6px;}
+  .result-big{display:flex; align-items:baseline; gap:10px; margin-bottom:4px; flex-wrap:wrap;}
+  .result-pct{font-family:var(--display); font-size:36px; font-weight:600; color:var(--gold-bright);}
+  .result-rs{font-family:var(--sans); font-size:16px; color:var(--txt-dark-muted);}
+  .result-note{font-size:13.5px; color:var(--txt-dark-muted); margin-top:10px; padding-top:14px; border-top:1px solid var(--line-d);}
+  .result-note strong{color:var(--gold-bright);}
+  .result.negative .result-pct{color:#E88A7D;}
+
+  .incoterms{display:grid; grid-template-columns:1fr 1fr; gap:12px; margin:20px 0;}
+  .incoterm-card{background:var(--bone-50); border:1px solid var(--line-l); border-radius:10px; padding:16px;}
+  .incoterm-card b{display:block; font-family:var(--display); font-size:16px; color:var(--gold-deep); margin-bottom:6px;}
+  .incoterm-card span{font-size:13px; color:var(--txt-light-muted); line-height:1.5;}
+  @media (max-width:560px){ .incoterms{grid-template-columns:1fr;} }
+
+  .checklist{background:var(--bone-50); border:1px solid var(--line-l); border-radius:14px; padding:8px; margin:20px 0;}
+  .check-item{display:flex; align-items:flex-start; gap:12px; padding:14px 16px; border-bottom:1px solid var(--line-l); cursor:pointer;}
+  .check-item:last-child{border-bottom:none;}
+  .check-item input{margin-top:3px; accent-color:var(--gold-deep); flex-shrink:0;}
+  .check-item span{font-size:14.5px; color:var(--txt-light-muted);}
+  .check-item.done span{color:var(--txt-light-muted); text-decoration:line-through; opacity:.6;}
+  .check-progress{font-size:12.5px; color:var(--txt-light-muted); margin-top:10px; text-align:right;}
+
+  .cta{margin-top:72px; background:var(--ink-950); border-radius:16px; padding:34px 30px; display:flex; gap:22px; align-items:center;}
+  .cta img.avatar{width:88px; height:88px; border-radius:50%; object-fit:cover; flex-shrink:0; border:2px solid var(--gold);}
+  .cta-body h3{font-family:var(--display); margin:0 0 8px; font-size:19px; font-weight:600; color:var(--txt-dark);}
+  .cta-body p{font-size:14.5px; color:var(--txt-dark-muted); margin:0 0 16px;}
+  .btn{display:inline-flex; align-items:center; gap:8px; background:var(--gold); color:var(--ink-950); font-weight:700; font-size:14.5px; padding:12px 22px; border-radius:999px; text-decoration:none;}
+  .btn::before{content:''; width:8px; height:8px; border-radius:50%; background:var(--ink-950);}
+  .ps{font-style:italic; color:var(--txt-dark-muted); font-size:13px; margin-top:14px;}
+  @media (max-width:560px){ .cta{flex-direction:column; align-items:flex-start;} }
+
+  footer{display:flex; justify-content:space-between; align-items:center; margin-top:48px; padding-top:20px; border-top:1px solid var(--line-l); font-family:var(--sans); font-weight:600; font-size:11px; letter-spacing:.06em; text-transform:uppercase; color:var(--txt-light-muted);}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="hero">
+    <svg class="hero-map" viewBox="0 0 520 300" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+      <g stroke="#1B2740" stroke-width="1">
+        <path d="M40 220 Q160 60 300 110 T480 60" stroke-dasharray="3 6"/>
+        <path d="M60 240 Q220 140 340 190 T500 130" stroke-dasharray="3 6"/>
+      </g>
+      <g fill="#C9A24B">
+        <circle cx="40" cy="220" r="3.5"/><circle cx="300" cy="110" r="3.5"/><circle cx="480" cy="60" r="3.5"/>
+        <circle cx="340" cy="190" r="3.5"/><circle cx="500" cy="130" r="3.5"/>
+      </g>
+    </svg>
+
+    <div class="hero-top">
+      <svg class="logo-mark" viewBox="140 100 740 605" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+        <path fill="#E3C377" d="M283 393 L401 117 L472 290 L441 393 Z"/>
+        <path fill="#C9A24B" d="M424 117 L594 117 L866 690 L697 690 Z"/>
+        <path fill="#B08D3C" d="M267 413 L556 413 L622 551 L363 551 L311 690 L155 690 Z"/>
+      </svg>
+      <span class="logo-word">AXIA<sup>®</sup></span>
+    </div>
+
+    <div class="hero-grid">
+      <div class="hero-copy">
+        <div class="hero-eyebrow"><span class="dot"></span>Material gratuito · Precificação Internacional</div>
+        <h1>Dólar a R$ 5,14 parece ganho. <span class="accent">Nem sempre é.</span></h1>
+        <p class="hero-sub">O câmbio favorável some quando parte do seu custo também é em dólar. Esta calculadora mostra quanto sobra de verdade.</p>
+      </div>
+      <svg class="coin-art" viewBox="0 0 120 120" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+        <circle cx="46" cy="70" r="34" fill="#121B30" stroke="#7E6225" stroke-width="2"/>
+        <text x="46" y="78" text-anchor="middle" fill="#A9B0C0" font-size="22" font-family="Archivo, sans-serif" font-weight="700">R$</text>
+        <circle cx="78" cy="42" r="34" fill="#C9A24B" stroke="#7E6225" stroke-width="2"/>
+        <text x="78" y="50" text-anchor="middle" fill="#0A1020" font-size="22" font-family="Archivo, sans-serif" font-weight="700">$</text>
+      </svg>
+    </div>
+  </div>
+
+  <div class="inner">
+
+  <p class="lede">Esta calculadora mostra quanto do seu ganho cambial é receita de verdade — e quanto já é consumido pelo custo do insumo importado. Preencha com os números da sua operação.</p>
+
+  <div class="tip">Esta é uma simulação simplificada pra decisão rápida. Não substitui uma estrutura de precificação internacional completa, com todos os custos e impostos da sua operação específica.</div>
+
+  <div class="toc">
+    <div class="toc-title">Neste material</div>
+    <ol>
+      <li><a href="#parte01">O efeito bumerangue do câmbio</a></li>
+      <li><a href="#parte02">Calculadora de margem real</a></li>
+      <li><a href="#parte03">Incoterms sem juridiquês</a></li>
+      <li><a href="#parte04">Checklist dos custos escondidos</a></li>
+    </ol>
+  </div>
+
+  <div class="part" id="parte01">
+    <div class="part-tag">Parte 01</div>
+    <h2>O efeito bumerangue do câmbio</h2>
+    <p>Quem decide exportar só pelo câmbio favorável costuma comemorar o dólar sem medir o custo do insumo importado na mesma moeda. O ganho cambial só é ganho de verdade depois de descontado o que a sua operação importaria pra produzir.</p>
+    <p>Preço internacional não é o preço nacional com frete somado. Câmbio mal calculado apaga em custo o que parecia ganho em receita — e isso só aparece depois de fechado o primeiro contrato, quando já é tarde pra renegociar.</p>
+  </div>
+
+  <div class="part" id="parte02">
+    <div class="part-tag">Parte 02</div>
+    <h2>Calculadora de margem real</h2>
+    <p>Preencha os campos abaixo. Se você não tem um câmbio de referência anterior, use o mesmo valor do câmbio atual nos dois campos — a calculadora ainda mostra sua margem líquida.</p>
+
+    <div class="calc" id="calc">
+      <div class="field-row">
+        <div class="field">
+          <label>Câmbio de referência (o que você usava antes)</label>
+          <div class="field-input"><span class="prefix">R$</span><input type="number" id="camRef" step="0.01" placeholder="4,90" value="4.90"></div>
+        </div>
+        <div class="field">
+          <label>Câmbio atual</label>
+          <div class="field-input"><span class="prefix">R$</span><input type="number" id="camAtual" step="0.01" placeholder="5,14" value="5.14"></div>
+        </div>
+      </div>
+
+      <div class="field">
+        <label>Preço de venda internacional, por unidade</label>
+        <div class="field-input"><span class="prefix">US$</span><input type="number" id="precoUSD" step="0.01" placeholder="100"></div>
+      </div>
+
+      <div class="field">
+        <label>Custo de produção por unidade (no câmbio de referência)</label>
+        <div class="field-input"><span class="prefix">R$</span><input type="number" id="custoProducao" step="0.01" placeholder="300"></div>
+      </div>
+
+      <div class="field">
+        <label>Quanto desse custo de produção é insumo importado?</label>
+        <div class="field-input"><input type="number" id="pctInsumo" step="1" min="0" max="100" placeholder="0"><span class="prefix">%</span></div>
+        <div class="field-hint">Matéria-prima, peça ou insumo que você compra em dólar — mesmo que pague em real, se o preço acompanha o câmbio, entra aqui.</div>
+      </div>
+
+      <div class="field-row">
+        <div class="field">
+          <label>Frete + seguro internacional, por unidade</label>
+          <div class="field-input"><span class="prefix">R$</span><input type="number" id="frete" step="0.01" placeholder="30"></div>
+        </div>
+        <div class="field">
+          <label>Impostos e taxas, por unidade</label>
+          <div class="field-input"><span class="prefix">R$</span><input type="number" id="impostos" step="0.01" placeholder="20"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="result" id="result">
+      <div class="result-label">Margem líquida real</div>
+      <div class="result-big">
+        <span class="result-pct" id="resultPct">—</span>
+        <span class="result-rs" id="resultRs"></span>
+      </div>
+      <div class="result-note" id="resultNote">Preencha os campos acima pra calcular.</div>
+    </div>
+  </div>
+
+  <div class="part" id="parte03">
+    <div class="part-tag">Parte 03</div>
+    <h2>Incoterms, sem juridiquês</h2>
+    <p>Os Incoterms definem só uma coisa, na prática: em que ponto do caminho o risco e o custo passam de você pro comprador. Os 4 que mais aparecem em exportação de indústria média:</p>
+
+    <div class="incoterms">
+      <div class="incoterm-card"><b>EXW</b><span>Você entrega na sua fábrica. O comprador cuida — e paga — tudo daí em diante: transporte, seguro, desembaraço. Menor risco pra você, mas o comprador exige preço mais baixo por isso.</span></div>
+      <div class="incoterm-card"><b>FOB</b><span>Você entrega a bordo do navio, no porto de origem. Cuida do transporte interno e da exportação; o comprador assume dali pro destino. O mais comum como primeiro passo.</span></div>
+      <div class="incoterm-card"><b>CFR / CIF</b><span>Você paga o frete internacional (CFR) ou frete + seguro (CIF) até o porto de destino, mas o risco passa pro comprador assim que a carga embarca. Exige mais controle de custo logístico da sua parte.</span></div>
+      <div class="incoterm-card"><b>DDP</b><span>Você entrega na porta do comprador, com tudo pago: frete, seguro, impostos de importação. Maior controle da experiência do comprador, mas exige domínio total dos custos — é onde mais gente perde margem sem perceber.</span></div>
+    </div>
+  </div>
+
+  <div class="part" id="parte04">
+    <div class="part-tag">Parte 04</div>
+    <h2>Checklist dos custos escondidos</h2>
+    <p>Os custos que mais pegam quem exporta pela primeira vez não são frete nem imposto — são estes:</p>
+
+    <div class="checklist" id="checklist">
+      <label class="check-item"><input type="checkbox"><span>Spread cambial do banco (a cotação que você recebe não é a do fechamento do dia)</span></label>
+      <label class="check-item"><input type="checkbox"><span>Documentação e despachante (fatura comercial, packing list, certificado de origem)</span></label>
+      <label class="check-item"><input type="checkbox"><span>Embalagem export-grade (resistência pra transporte longo, não a mesma do mercado interno)</span></label>
+      <label class="check-item"><input type="checkbox"><span>Certificações exigidas no destino (sanitária, técnica, ambiental — variam por país)</span></label>
+      <label class="check-item"><input type="checkbox"><span>Armazenagem e demurrage no porto de destino, se o desembaraço atrasar</span></label>
+      <label class="check-item"><input type="checkbox"><span>Comissão de agente ou representante local, se houver</span></label>
+      <label class="check-item"><input type="checkbox"><span>Seguro de crédito ou custo de garantia, se a venda não for via carta de crédito</span></label>
+    </div>
+    <div class="check-progress" id="checkProgress">0 de 7 marcados</div>
+  </div>
+
+  <div class="cta">
+    <img class="avatar" src="leandro-pietro.png" alt="Leandro Di Pietro">
+    <div class="cta-body">
+      <h3>Leandro Di Pietro — AXIA</h3>
+      <p>Na AXIA, o diagnóstico é apenas o início. Quando existe aderência, atuo na estruturação da precificação internacional e na execução comercial da expansão, como Diretor Comercial de Exportação Fracionado.</p>
+      <a class="btn" href="https://cal.com/leandro-di-pietro/60min" target="_blank" rel="noopener">Marcar uma conversa com o Leandro</a>
+      <div class="ps">PS.: Funciona pra quem está avaliando dar o primeiro passo na exportação agora, motivado pelo câmbio.</div>
+    </div>
+  </div>
+
+  <footer>
+    <span>AXIA</span>
+    <span>Internacionalização e estruturação comercial B2B</span>
+  </footer>
+
+  </div>
+</div>
+
+<script>
+(function(){
+  var ids = ['camRef','camAtual','precoUSD','custoProducao','pctInsumo','frete','impostos'];
+  var inputs = {};
+  ids.forEach(function(id){ inputs[id] = document.getElementById(id); });
+
+  var resultEl = document.getElementById('result');
+  var resultPct = document.getElementById('resultPct');
+  var resultRs = document.getElementById('resultRs');
+  var resultNote = document.getElementById('resultNote');
+
+  function fmt(n){
+    return n.toLocaleString('pt-BR', {minimumFractionDigits:2, maximumFractionDigits:2});
+  }
+
+  function calc(){
+    var camRef = parseFloat(inputs.camRef.value) || 0;
+    var camAtual = parseFloat(inputs.camAtual.value) || 0;
+    var precoUSD = parseFloat(inputs.precoUSD.value) || 0;
+    var custoProducao = parseFloat(inputs.custoProducao.value) || 0;
+    var pctInsumo = parseFloat(inputs.pctInsumo.value) || 0;
+    var frete = parseFloat(inputs.frete.value) || 0;
+    var impostos = parseFloat(inputs.impostos.value) || 0;
+
+    if (precoUSD <= 0 || camAtual <= 0){
+      resultEl.classList.remove('negative');
+      resultPct.textContent = '—';
+      resultRs.textContent = '';
+      resultNote.textContent = 'Preencha ao menos o preço de venda e o câmbio atual pra calcular.';
+      return;
+    }
+    if (camRef <= 0) camRef = camAtual;
+
+    var receita = precoUSD * camAtual;
+    var parteImportadaRef = custoProducao * (pctInsumo/100);
+    var parteNacional = custoProducao * (1 - pctInsumo/100);
+    var parteImportadaAtual = parteImportadaRef * (camAtual/camRef);
+    var custoProducaoAtual = parteNacional + parteImportadaAtual;
+    var custoTotal = custoProducaoAtual + frete + impostos;
+    var margemLiquida = receita - custoTotal;
+    var margemPct = (margemLiquida/receita) * 100;
+
+    resultEl.classList.toggle('negative', margemLiquida < 0);
+    resultPct.textContent = fmt(margemPct) + '%';
+    resultRs.textContent = 'R$ ' + fmt(margemLiquida) + ' de margem líquida por unidade (receita R$ ' + fmt(receita) + ')';
+
+    var note = '';
+    if (camAtual !== camRef && precoUSD > 0){
+      var receitaRef = precoUSD * camRef;
+      var ganhoCambialBruto = receita - receitaRef;
+      var custoExtraInsumo = parteImportadaAtual - parteImportadaRef;
+      if (ganhoCambialBruto > 0){
+        var comido = Math.max(0, Math.min(100, (custoExtraInsumo/ganhoCambialBruto)*100));
+        note = 'A alta do câmbio aumentou sua receita em R$ ' + fmt(ganhoCambialBruto) + ' por unidade. Mas ' + fmt(custoExtraInsumo) + ' desse valor (<strong>' + fmt(comido) + '% do ganho cambial</strong>) já foi consumido pelo encarecimento do insumo importado.';
+      } else if (ganhoCambialBruto < 0) {
+        note = 'O câmbio atual está abaixo do de referência — isso reduziu sua receita em R$ ' + fmt(-ganhoCambialBruto) + ' por unidade, mas também baratou o insumo importado em R$ ' + fmt(-custoExtraInsumo) + '.';
+      }
+    }
+    if (!note){
+      note = pctInsumo > 0
+        ? 'Com ' + pctInsumo + '% de insumo importado, parte do custo acompanha o câmbio — mantenha essa conta atualizada a cada variação relevante.'
+        : 'Sem insumo importado no custo, a margem não é corroída pelo câmbio — mas confira se frete, impostos e spread cambial do banco estão completos.';
+    }
+    resultNote.innerHTML = note;
+  }
+
+  Object.keys(inputs).forEach(function(id){
+    inputs[id].addEventListener('input', calc);
+  });
+  calc();
+
+  // checklist
+  var checklist = document.getElementById('checklist');
+  var checkProgress = document.getElementById('checkProgress');
+  function updateChecklist(){
+    var items = checklist.querySelectorAll('.check-item');
+    var done = 0;
+    items.forEach(function(item){
+      var checked = item.querySelector('input').checked;
+      item.classList.toggle('done', checked);
+      if (checked) done++;
+    });
+    checkProgress.textContent = done + ' de ' + items.length + ' marcados';
+  }
+  checklist.addEventListener('change', updateChecklist);
+  updateChecklist();
+})();
+</script>
+</body>
+</html>
